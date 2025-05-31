@@ -1,7 +1,7 @@
-import portfolioModel from "../models/postfolio.model.js";
+import portfolioModel from "../models/portfolio.model.js";
 import type {Context} from "hono";
 import { HTTPException } from 'hono/http-exception';
-import {type CreatePortfolio} from "../models/postfolio.model.js";
+import {type CreatePortfolio} from "../models/portfolio.model.js";
 
 
 export const handleCreatePortfolio = async (c: Context) => {

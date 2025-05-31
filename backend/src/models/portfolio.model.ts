@@ -41,7 +41,15 @@ const CreatePortfolioModel = async(input:CreatePortfolio)=>{
             if (!existingUser) {
                 throw new Error("User does not exist!");
             }
+
     try {
+        const existingTagsCount = await db.tag.count({
+            where: { id: { in: input.tags } }
+        });
+        if (existingTagsCount !== input.tags.length) {
+            throw new HTTPException(400, { message: "One or more provided tag IDs are invalid." });
+        }
+
         const newPortfolio = await db.portfolio.create({
             data: {
                 userId: input.userId,
