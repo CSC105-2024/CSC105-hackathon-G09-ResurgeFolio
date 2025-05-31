@@ -69,7 +69,7 @@ export const handleGetPortfoliosByStatus = async (c: Context) => {
             return c.json({ error: "'status' must be a non-empty string." }, 400);
         }
 
-        const allowedStatuses = ["PENDING", "ACCEPTED", "REJECTED"];
+        const allowedStatuses = ["PENDING", "APPROVED", "REJECTED"];
         if (!allowedStatuses.includes(status.toUpperCase())) { // Consider case-insensitivity
             return c.json({ error: `Invalid status value. Allowed statuses are: ${allowedStatuses.join(', ')}.` }, 400);
         }

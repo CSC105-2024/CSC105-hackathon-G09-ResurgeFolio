@@ -1,7 +1,5 @@
-
-import { db } from "../index.js"; // Adjust path to your Prisma client instance
+import { db } from "../index.js";
 import { HTTPException } from 'hono/http-exception';
-import { Prisma } from "@prisma/client";
 
 export interface CreateReviewModelInput {
     portfolioId: number;
@@ -10,7 +8,7 @@ export interface CreateReviewModelInput {
     failureDesc?: string;
 }
 
-const allowedReviewStatuses = ["ACCEPTED", "REJECTED"]; // Centralize allowed statuses
+const allowedReviewStatuses = ["APPROVED", "REJECTED"]; // define allowed statuses
 
 const createReviewModel = async (input: CreateReviewModelInput) => {
     const { portfolioId, reviewerId, status, failureDesc } = input;
@@ -27,59 +25,47 @@ const createReviewModel = async (input: CreateReviewModelInput) => {
         throw new HTTPException(400, { message: `Invalid review status. Allowed values are: ${allowedReviewStatuses.join(', ')}.` });
     }
 
-    let finalFailureDesc = failureDesc; // Prepare failureDesc for database insertion
+    // --- Validate failureDesc based on status ---
     if (normalizedStatus === "REJECTED") {
         if (!failureDesc || failureDesc.trim() === "") {
             throw new HTTPException(400, { message: "failureDesc is required when status is REJECTED." });
         }
-        // Ensure failureDesc is a trimmed string if provided
-        finalFailureDesc = failureDesc.trim();
-    } else { // For "ACCEPTED" or any other non-rejected status
-        if (failureDesc && failureDesc.trim() !== "") { // Log if failureDesc provided unnecessarily
-            console.warn(`failureDesc was provided for a review with status '${normalizedStatus}'. It will be ignored and set to null.`);
+    } else if (normalizedStatus === "APPROVED") {
+        if (failureDesc && failureDesc.trim() !== "") {
+            throw new HTTPException(400, { message: "failureDesc must not be provided when status is APPROVED." });
         }
-        finalFailureDesc = undefined; // Explicitly set to null for non-REJECTED statuses
     }
 
     try {
         // --- Database Operations within a Transaction ---
         const result = await db.$transaction(async (prisma) => {
-            // 1. Verify Portfolio exists
-            const portfolio = await prisma.portfolio.findUnique({
-                where: { id: portfolioId },
-            });
+            const portfolio = await prisma.portfolio.findUnique({ where: { id: portfolioId } });
             if (!portfolio) {
                 throw new HTTPException(404, { message: `Portfolio with ID ${portfolioId} not found.` });
             }
 
-            // 2. Verify Reviewer (User) exists
-            const reviewer = await prisma.user.findUnique({ // Assuming 'User' is your model for reviewers
-                where: { id: reviewerId },
-            });
+            const reviewer = await prisma.user.findUnique({ where: { id: reviewerId } });
             if (!reviewer) {
                 throw new HTTPException(404, { message: `Reviewer with User ID ${reviewerId} not found.` });
             }
 
-            // 3. Create the Review record
             const newReview = await prisma.review.create({
                 data: {
-                    portfolioId: portfolioId,
-                    reviewerId: reviewerId,
+                    portfolioId,
+                    reviewerId,
                     status: normalizedStatus,
-                    failureDesc: finalFailureDesc,
+                    failureDesc: normalizedStatus === "REJECTED" ? failureDesc : undefined,
                 },
                 include: {
-                    reviewer: { select: { id: true, name: true } }, 
+                    reviewer: { select: { id: true, name: true } },
                     portfolio: { select: { id: true, title: true } }
                 }
             });
 
             const updatedPortfolio = await prisma.portfolio.update({
                 where: { id: portfolioId },
-                data: {
-                    status: normalizedStatus, // Mirror the review's status
-                },
-                select: { status: true } // Only select the updated status for the return
+                data: { status: normalizedStatus },
+                select: { status: true }
             });
 
             return { newReview, updatedPortfolioStatus: updatedPortfolio.status };
@@ -87,7 +73,7 @@ const createReviewModel = async (input: CreateReviewModelInput) => {
 
         return result;
 
-    } catch (e:any) {
+    } catch (e: any) {
         if (e instanceof HTTPException) {
             throw e;
         }
@@ -95,4 +81,5 @@ const createReviewModel = async (input: CreateReviewModelInput) => {
         throw new HTTPException(500, { message: "An unexpected server error occurred while creating the review." });
     }
 };
-export default {createReviewModel}
+
+export default { createReviewModel };
