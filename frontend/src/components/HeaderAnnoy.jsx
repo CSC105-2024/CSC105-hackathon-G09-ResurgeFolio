@@ -55,7 +55,7 @@ export const HeaderAnnoy = ({ user,setUser }) => {
 
           {isHR ? (
             <>
-              <a href="#" className="hover:text-[rgba(54,122,255,1)] transition-colors">Review Portfolio</a>
+              <a href="/review" className="hover:text-[rgba(54,122,255,1)] transition-colors">Review Portfolio</a>
             </>
           ) : isLoggedIn ? (
             <>

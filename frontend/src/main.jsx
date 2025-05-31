@@ -9,6 +9,7 @@ import SubmitPortfolio from './pages/SubmitPortfolio';
 import UserEdit from './pages/UserEdit';
 import BrowseResume from './pages/BrowseResume';
 import Notification from './pages/Notification';
+import ReviewHR from './pages/ReviewHR';
 const router = createBrowserRouter([
   {
     path: "/",
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
   {
     path:"/notification",
     element:<Notification/>
+  },
+    {
+    path:"/review",
+    element:<ReviewHR/>
   }
 ]);
 createRoot(document.getElementById("root")).render(
