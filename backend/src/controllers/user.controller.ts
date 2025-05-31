@@ -242,8 +242,30 @@ const deleteUser = async (c: Context) => {
   }
 };
 
+const decodeCookie = async(c:Context)=> {
+    try {
+    const token = c.req.header('cookie')?.match(/userToken=([^;]+)/)?.[1];
+    if (!token) return c.json({ loggedIn: false }, 200);
+
+    const payload = verifyToken(token); 
+    if (!payload) return c.json({ loggedIn: false }, 200);
+
+    const user = await userModel.getUserById(payload.id);
+    if (!user) return c.json({ loggedIn: false }, 200);
+
+    return c.json({
+      loggedIn: true,
+      user: { id: user.id, name: user.name, email:user.email, role: user.role },
+    }, 200);
+      
+  } catch {
+    return c.json({ loggedIn: false }, 200);
+  }
+}
+
 export {createUser,createHRUser,loginUser,logoutUser,
     updateName,updatePassword,updateEmail,
-    deleteUser
+    deleteUser,
+    decodeCookie
 
 }
