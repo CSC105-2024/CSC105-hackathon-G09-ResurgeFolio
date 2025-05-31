@@ -2,6 +2,7 @@
 import jwt from 'jsonwebtoken';
 type Payload ={
     id:number
+    role:string
 }
 
 export const generateToken = (payload: Payload, expiresIn: string): string => {
