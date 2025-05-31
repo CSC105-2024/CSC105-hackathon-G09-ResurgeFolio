@@ -1,6 +1,6 @@
 import {db} from "../index.js";
 import { HTTPException } from 'hono/http-exception';
-import {Prisma} from "@prisma/client"
+
 
 export interface CreatePortfolio {
     userId: number;
@@ -64,6 +64,6 @@ const CreatePortfolioModel = async(input:CreatePortfolio)=>{
     }
 }
 const GetPortfolioById = async(userId:number)=>{
-
+    
 }
 export default {CreatePortfolioModel};

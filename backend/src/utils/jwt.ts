@@ -1,4 +1,4 @@
-//สร้าง กับ ยืนยัน JWT
+
 import jwt from 'jsonwebtoken';
 type Payload ={
     id:number

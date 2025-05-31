@@ -33,6 +33,38 @@ const createUser = async(c:Context) => {
     }
 }
 
+const createHRUser = async (c: Context) => {
+  try {
+    const body = await c.req.json();
+
+    if (!body.name || !body.email || !body.password) {
+      return c.json({ error: "Missing name, email or password" }, 400);
+    }
+
+    const newUser = await userModel.createHRUser(body.name, body.email, body.password);
+
+    const token = generateToken({ id: newUser.id, role: newUser.role }, "1d");
+    c.header("Set-Cookie", `userToken=${token}; HttpOnly; Path=/; Max-Age=86400; SameSite=Strict`);
+
+    return c.json({
+      success: true,
+      message: "HR user created!",
+      user: {
+        id: newUser.id,
+        name: newUser.name,
+        email: newUser.email,
+        role: newUser.role
+      }
+    });
+  } catch (error: any) {
+    console.error("Create HR user error:", error);
+    if (error.message === "Email already exists.") {
+      return c.json({ error: "This email is already registered." }, 400);
+    }
+    return c.json({ error: "Internal server error" }, 500);
+  }
+};
+
 const loginUser = async(c:Context) => {
     try {
         const body = await c.req.json();
@@ -187,10 +219,31 @@ const logoutUser = async(c:Context) => {
     }
 }
 
+const deleteUser = async (c: Context) => {
+  try {
+    const user = c.get("user");
+    const userId = user.id;
+    const deleteUser = await userModel.deleteUser(userId);
+    if(!deleteUser){
+      return c.json({
+        error: "Fail to delete user's account."
+      },400)
+    }
+    return c.json({
+      message: "Delete account successful.",
+      isDeleted: true,
+      user: deleteUser
+    })
+  } catch (error) {
+    console.log(error);
+    return c.json({
+      error: "Internal server error"
+    },500)
+  }
+};
 
-
-export {createUser,loginUser,logoutUser,
+export {createUser,createHRUser,loginUser,logoutUser,
     updateName,updatePassword,updateEmail,
-
+    deleteUser
 
 }

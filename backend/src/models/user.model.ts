@@ -18,6 +18,26 @@ const createUser = async(email:string,name:string,password:string) => {
     })
     return user;
 }
+// we don't use it in integration 
+const createHRUser = async (name: string, email: string, password: string) => {
+  const existing = await db.user.findUnique({ where: { email } });
+  if (existing) {
+    throw new Error("Email already exists.");
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const user = await db.user.create({
+    data: {
+      name,
+      email,
+      password: hashedPassword,
+      role: "HR", 
+    },
+  });
+
+  return user;
+};
 
 const loginUser = async(email:string, password:string) => {
     const user = await db.user.findUnique({where:{email}})
@@ -72,7 +92,16 @@ const updateEmail = async (id: number, newEmail: string) => {
     });
 };
 
-export default {createUser,loginUser,
+const deleteUser = async (id:number) => {
+    const user = await db.user.findUnique({where: {id}});
+    if(!user) return null;
+    return db.user.delete({
+        where: {id}
+    })
+}
+
+export default {createUser,createHRUser,loginUser,
     getUserById,getUserByEmail,
-    updateUsername,updatePassword,updateEmail
+    updateUsername,updatePassword,updateEmail,
+    deleteUser
 }
