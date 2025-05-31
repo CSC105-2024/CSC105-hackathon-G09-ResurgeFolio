@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
-
+import { registerUser } from '../api/auth.api';
+import { Link,useNavigate } from 'react-router-dom';
 export const SignUpForm = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errors, setErrors] = useState({});
-
+  const navigate = useNavigate();
   const validateForm = () => {
     const newErrors = {};
     if (!name.trim()) {
@@ -32,10 +33,18 @@ export const SignUpForm = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    if (validateForm()) {
-      console.log('Sign up data:', { name, email, password });
+  const handleSubmit = async(event) => {
+    try {
+      event.preventDefault();
+      if (validateForm()) {
+        const register = await registerUser(email,name,password);
+        if(!register){
+          console.error("Register failed.")
+        }
+        navigate('/');
+      }
+    } catch (error) {
+      console.error("Registration failed:", err.response?.data || err.message);
     }
   };
 
@@ -129,9 +138,12 @@ export const SignUpForm = () => {
           <span className="text-[#6C6C6C] font-normal">
             Already have an account?{' '}
           </span>
+          <Link to='/login'>
           <a href="#" className="text-[#367AFF] font-bold underline hover:text-[#2563EB] transition-colors">
             Login
           </a>
+          </Link>
+          
         </div>
       </div>
     </section>

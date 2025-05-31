@@ -1,5 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link,useNavigate } from 'react-router-dom';
+import { loginUser } from '../api/auth.api';
 export const LoginForm = () => {
   const [showPassword, setShowPassword] = React.useState(false);
   const [keepLoggedInInternal, setKeepLoggedInInternal] = React.useState(false);
@@ -10,7 +11,7 @@ export const LoginForm = () => {
 
   const [errors, setErrors] = React.useState({}); 
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-
+  const navigate = useNavigate();
   const register = (name) => ({ name });
 
   const handleSubmit = (onSubmitFunc) => (event) => {
@@ -39,12 +40,23 @@ export const LoginForm = () => {
   };
 
   const onSubmit = async (data) => {
-    console.log('Login data (manual):', data);
-    setIsSubmitting(true);
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setIsSubmitting(false);
-    console.log('Submission complete');
+    const { email, password, keepLoggedIn } = data;
+    console.log('Login data:', { email, password, keepLoggedIn });
+
+    try {
+      setIsSubmitting(true);
+      const response = await loginUser(email, password, keepLoggedIn);
+      console.log('Login successful:', response);
+      // Redirect to home or dashboard if needed
+    } catch (err) {
+      console.error("Login failed:", err.response?.data || err.message);
+      // You may want to show an error message to user here
+    } finally {
+      setIsSubmitting(false);
+      navigate('/');
+    }
   };
+
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
