@@ -1,6 +1,6 @@
 import {db} from "../index.js";
 import { HTTPException } from 'hono/http-exception';
-
+import {Prisma} from "@prisma/client"
 
 export interface CreatePortfolio {
     userId: number;
@@ -28,8 +28,11 @@ const CreatePortfolioModel = async(input:CreatePortfolio)=>{
         if(!input.company || input.company.trim() === ""){
             throw new Error("Company is required");
         }
-        if(!input.shortDesc || input.shortDesc.trim() === ""){
+        if(!input.shortDesc || input.shortDesc.trim() === "" || input.shortDesc === null){
             throw new Error("ShortDesc is required");
+        }
+        if (!input.tags || !Array.isArray(input.tags) || input.tags.length === 0) {
+            throw new HTTPException(400, { message: "Tags can't be empty. At least one tag ID is required." });
         }
             const existingUser = await db.user.findUnique({
                 where: { id: input.userId },
@@ -63,7 +66,49 @@ const CreatePortfolioModel = async(input:CreatePortfolio)=>{
         throw new HTTPException(500, { message: "Could not create portfolio." });
     }
 }
-const GetPortfolioById = async(userId:number)=>{
-    
+const GetPortfoliosByUserId = async (userId: number) => { // Removed skip and take parameters
+    if (userId === undefined || userId === null) {
+        throw new HTTPException(400, { message: "User ID is required to fetch portfolios." });
+    }
+    try {
+        const userExists = await db.user.findUnique({
+            where: { id: userId }
+        });
+        if (!userExists) {
+            throw new HTTPException(404, { message: `User with ID ${userId} not found.` });
+        }
+        const portfolios = await db.portfolio.findMany({
+            where: { userId: userId },
+            orderBy: {
+                createdAt: 'desc'
+            }
+        });
+        return portfolios;
+    } catch (error) {
+        if (error instanceof HTTPException) {
+            throw error;
+        }
+        console.error(`Error fetching portfolios for user ${userId}:`, error);
+        throw new HTTPException(500, { message: "Could not fetch portfolios." });
+    }
+};
+const GetPortfoliosByStatus = async (status: string) => {
+        const portfoliosByStatus = await db.portfolio.findMany({
+            where: { status: status },
+            include: {
+                tags: true,
+                user: {
+                    select: { id: true, name: true, email: true }
+                }
+            },
+            orderBy: {
+                createdAt: 'desc'
+            }
+        });
+        return portfoliosByStatus;
+};
+
+const GetPortfolioDetail = async()=>{
+
 }
-export default {CreatePortfolioModel};
+export default { CreatePortfolioModel, GetPortfoliosByUserId,GetPortfoliosByStatus };
