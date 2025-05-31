@@ -1,6 +1,6 @@
 import React from 'react';
 import { HeaderAnnoy } from '../components/HeaderAnnoy';
-import { SignUpForm } from '../components/SignUpForm';
+import { SignUpForm } from '../components/SignupForm';
 
 const Register = () => {
   return (

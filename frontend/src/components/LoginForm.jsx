@@ -47,10 +47,14 @@ export const LoginForm = () => {
       setIsSubmitting(true);
       const response = await loginUser(email, password, keepLoggedIn);
       console.log('Login successful:', response);
+      // Redirect to home or dashboard if needed
     } catch (err) {
       console.error("Login failed:", err.response?.data || err.message);
-      setIsSubmitting(false)
-    } 
+      // You may want to show an error message to user here
+    } finally {
+      setIsSubmitting(false);
+      navigate('/');
+    }
   };
 
 

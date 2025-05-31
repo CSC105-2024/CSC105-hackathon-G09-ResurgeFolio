@@ -56,10 +56,12 @@ export const HeaderAnnoy = ({ user,setUser }) => {
           {isHR ? (
             <>
               <a href="#" className="hover:text-[rgba(54,122,255,1)] transition-colors">Review Portfolio</a>
-              <a href="#" className="hover:text-[rgba(54,122,255,1)] transition-colors">Browse Resume</a>
             </>
           ) : isLoggedIn ? (
-            <a href="#" className="hover:text-[rgba(54,122,255,1)] transition-colors">Submit Portfolio</a>
+            <>
+            <a href="/submit" className="hover:text-[rgba(54,122,255,1)] transition-colors">Submit Portfolio</a>
+            <a href="/browse" className="hover:text-[rgba(54,122,255,1)] transition-colors">Browse Resume</a>
+            </>
           ) : null}
         </div>
 
@@ -89,7 +91,7 @@ export const HeaderAnnoy = ({ user,setUser }) => {
           {dropdownOpen && (
             <div className="absolute right-0 top-full mt-2 bg-white border border-gray-300 rounded-md shadow-md w-48 z-50">
               <a
-                href="#"
+                href="/useredit"
                 className="block px-4 py-2 text-sm hover:bg-gray-100"
               >
                 Edit Profile
