@@ -86,6 +86,38 @@ const GetPortfoliosByStatus = async (status: string) => {
         });
         return portfoliosByStatus;
 };
+const GetPortfolioByTag = async (tags: string) => {
+ const tag = await db.tag.findUnique({
+     where:{name:tags},
+ });
+ if(!tag){
+     return null;
+ }
+ return db.portfolio.findMany({
+     where:{
+         tags:{
+             some:{
+                 name:tags,
+             }
+         },
+         status:"REJECTED"
+     },
+     include:{
+         tags: true,
+         user: {
+             select:{id:true,name:true,email:true}
+         },
+         review:{
+             select:{
+                 status:true,failureDesc:true
+             }
+         },
 
+     },
+     orderBy:{
+         createdAt: 'desc',
+     },
+ })
+}
 
-export default { CreatePortfolioModel, GetPortfoliosByUserId,GetPortfoliosByStatus };
+export default { CreatePortfolioModel, GetPortfoliosByUserId,GetPortfolioByTag,GetPortfoliosByStatus };

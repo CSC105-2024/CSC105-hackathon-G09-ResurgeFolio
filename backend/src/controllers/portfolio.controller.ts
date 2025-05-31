@@ -123,3 +123,20 @@ export const handleGetPortfoliosByStatus = async (c: Context) => {
         return c.json({ error: "An unexpected server error occurred while retrieving portfolios by status." }, 500);
     }
 };
+export const handleGetPortfolioByTag = async (c: Context) => {
+    try {
+        const tags = c.req.param('tags');
+        if(!tags||tags.trim() === ""){
+            return c.json({error: 'Tag name is required in the URL path.'},400)
+        }
+        const port= await portfolioModel.GetPortfolioByTag(tags);
+        if(port === null){
+        return c.json({error:'Tag with name"${tagName}" does not exist."'},404);
+        }
+        return c.json(port,200);
+    }
+    catch (error: any) {
+        console.error("Error in handleGetPortfolioByTag:", error);
+        return c.json({error:'Failed to retrieve portfolio by tag.'},500);
+    }
+}
