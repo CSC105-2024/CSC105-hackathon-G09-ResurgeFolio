@@ -11,6 +11,19 @@ export const getRejectedResume = async () => {
     throw error;
   }
 };
+export const getPortByTag = async (tags) => {
+  try {
+    const query = tags.map(tag => tag.toLowerCase()).join(',');
+    const response = await Axios.get(`/post/${encodeURIComponent(query)}/getTag`, {
+      withCredentials: true
+    });
+    return response;
+  } catch (error) {
+    console.error('Get portfolio by tags:', error);
+    throw error;
+  }
+}
+
 
 export const submitPortfolio = async (userId, title, url, jobPosition, 
     company, shortDesc, learning, tags) => {
@@ -45,4 +58,5 @@ export const getPortNotification = async() => {
         throw error
     }
 }
+
 
