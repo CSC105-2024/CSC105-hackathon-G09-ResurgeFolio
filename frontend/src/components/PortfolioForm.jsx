@@ -4,6 +4,7 @@ import { TextAreaField } from '../components/TextAreaField';
 import { TagSelector } from '../components/TagSelector';
 import { getAllTag } from '../api/tag.api';
 import { submitPortfolio } from '../api/post.api';
+import { useNavigate } from 'react-router-dom';
 
 export const PortfolioForm = ({ userId }) => {
   const [formData, setFormData] = useState({
@@ -15,7 +16,7 @@ export const PortfolioForm = ({ userId }) => {
     failures: '',
     tags: []
   });
-
+  const navigate = useNavigate();
   const [availableTags, setAvailableTags] = useState([]);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -82,9 +83,6 @@ export const PortfolioForm = ({ userId }) => {
         tagIds
       );
       console.log(submit);
-
-      alert('Portfolio submitted successfully!');
-
       setFormData({
         title: '',
         url: '',
@@ -94,6 +92,7 @@ export const PortfolioForm = ({ userId }) => {
         failures: '',
         tags: []
       });
+      navigate('/notification')
     } catch (error) {
       alert('Error submitting portfolio. Please try again.');
     } finally {

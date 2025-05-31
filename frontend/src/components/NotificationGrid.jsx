@@ -1,12 +1,10 @@
-
-import React from 'react';
+import React, {useState,useEffect} from 'react';
 import { NotificationCard } from './NotificationCard';
+import { getPortNotification } from '../api/post.api';
+export const NotificationGrid = ({ className = '' }) => {
+  const [notifications, setNotifications] = useState([]);
+  const [error, setError] = useState(null);
 
-export const NotificationGrid = ({
-  notifications = [],
-  className = ''
-}) => {
-  // Default notifications if none provided
   const defaultNotifications = [
     {
       id: '1',
@@ -34,6 +32,31 @@ export const NotificationGrid = ({
     }
   ];
 
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const res = await getPortNotification();
+        const backendData = res.data || [];
+
+        const mapped = backendData.map((item, index) => ({
+          id: item.id,
+          status: item.status.toLowerCase(), // e.g. 'APPROVED' → 'approved'
+          position: item.jobPosition,
+          company: item.company,
+          date: item.createdAt.slice(0, 10), // get YYYY-MM-DD
+          backgroundImage: defaultNotifications[index % defaultNotifications.length].backgroundImage // reuse backgroundImage
+        }));
+
+        setNotifications(mapped);
+      } catch (err) {
+        console.error('Error loading notifications:', err);
+        setError('Failed to load notifications');
+      }
+    };
+
+    fetchNotifications();
+  }, []);
+
   const displayNotifications = notifications.length > 0 ? notifications : defaultNotifications;
 
   return (
@@ -60,7 +83,7 @@ export const NotificationGrid = ({
             </div>
           </div>
         </div>
-        
+
         {displayNotifications.length > 2 && (
           <div className="w-[33%] ml-5 max-md:w-full max-md:ml-0">
             <NotificationCard
@@ -74,6 +97,10 @@ export const NotificationGrid = ({
           </div>
         )}
       </div>
+
+      {error && (
+        <div className="text-red-500 mt-4">⚠️ {error}</div>
+      )}
     </section>
   );
 };

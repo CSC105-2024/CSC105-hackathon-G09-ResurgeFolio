@@ -12,8 +12,8 @@ export const getRejectedResume = async () => {
   }
 };
 
-    export const submitPortfolio = async (userId, title, url, jobPosition, 
-        company, shortDesc, learning, tags) => {
+export const submitPortfolio = async (userId, title, url, jobPosition, 
+    company, shortDesc, learning, tags) => {
     try {
         const payload = {
         userId, 
@@ -34,5 +34,15 @@ export const getRejectedResume = async () => {
         console.error('Submit portfolio error:', error);
         throw error;
     }
-    };
+};
+
+export const getPortNotification = async() => {
+    try {
+        const response = await Axios.get('/post/get',{withCredentials: true});
+        return response.data;
+    } catch (error) {
+        console.error('Fail to fetch portfolio from database:',error);
+        throw error
+    }
+}
 
