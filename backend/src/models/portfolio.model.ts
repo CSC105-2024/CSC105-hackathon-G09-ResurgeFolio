@@ -45,7 +45,7 @@ const CreatePortfolioModel = async(input:CreatePortfolio)=>{
         throw new HTTPException(500, { message: "Could not create portfolio." });
     }
 }
-const GetPortfoliosByUserId = async (userId: number) => { // Removed skip and take parameters
+const GetPortfoliosByUserId = async (userId: number) => { 
     if (userId === undefined || userId === null) {
         throw new HTTPException(400, { message: "User ID is required to fetch portfolios." });
     }
@@ -86,38 +86,40 @@ const GetPortfoliosByStatus = async (status: string) => {
         });
         return portfoliosByStatus;
 };
-const GetPortfolioByTag = async (tags: string) => {
- const tag = await db.tag.findUnique({
-     where:{name:tags},
- });
- if(!tag){
-     return null;
- }
- return db.portfolio.findMany({
-     where:{
-         tags:{
-             some:{
-                 name:tags,
-             }
-         },
-         status:"REJECTED"
-     },
-     include:{
-         tags: true,
-         user: {
-             select:{id:true,name:true,email:true}
-         },
-         review:{
-             select:{
-                 status:true,failureDesc:true
-             }
-         },
+const GetPortfolioByTag = async (tagsString: string) => {
+  const tagList = tagsString.split(',').map(tag => tag.trim().toLowerCase());
 
-     },
-     orderBy:{
-         createdAt: 'desc',
-     },
- })
-}
+  
+  const portfolios = await db.portfolio.findMany({
+    where: {
+      status: "REJECTED",
+      AND: tagList.map(tagName => ({
+        tags: {
+          some: {
+            name: tagName
+          }
+        }
+      }))
+    },
+    include: {
+      tags: true,
+      user: {
+        select: { id: true, name: true, email: true }
+      },
+      review: {
+        select: {
+          status: true,
+          failureDesc: true
+        }
+      }
+    },
+    orderBy: {
+      createdAt: 'desc',
+    }
+  });
+
+  return portfolios;
+};
+
 
 export default { CreatePortfolioModel, GetPortfoliosByUserId,GetPortfolioByTag,GetPortfoliosByStatus };
