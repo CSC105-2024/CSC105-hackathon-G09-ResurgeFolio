@@ -10,8 +10,6 @@ import { fetchCurrentUser } from '../api/auth.api';
 const Homepage = () => {
   const location = useLocation();
   const [user, setUser] = useState(null);
-
-  // Smooth scroll to section if URL has hash
   useEffect(() => {
     if (location.hash) {
       const id = location.hash.replace('#', '');

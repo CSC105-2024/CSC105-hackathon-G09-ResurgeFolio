@@ -68,7 +68,10 @@ export const HeaderAnnoy = ({ user,setUser }) => {
         {/* Right-side: Bell + Dropdown */}
         <div className="relative flex items-center gap-4 ml-6" ref={dropdownRef}>
           {isLoggedIn && (
+            <Link to='/notification'>
             <span className="text-xl cursor-pointer" title="Notifications">🔔</span>
+            </Link>
+            
           )}
 
           {isLoggedIn ? (

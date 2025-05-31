@@ -2,13 +2,13 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Homepage from './pages/Homepage';
+import Homepage from './pages/HomePage';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import SubmitPortfolio from './pages/SubmitPortfolio';
 import UserEdit from './pages/UserEdit';
 import BrowseResume from './pages/BrowseResume';
-
+import Notification from './pages/Notification';
 const router = createBrowserRouter([
   {
     path: "/",
@@ -34,6 +34,10 @@ const router = createBrowserRouter([
     path: "/browse",
     element: <BrowseResume/>
   },
+  {
+    path:"/notification",
+    element:<Notification/>
+  }
 ]);
 createRoot(document.getElementById("root")).render(
   <StrictMode>
