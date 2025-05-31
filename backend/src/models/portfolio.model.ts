@@ -13,35 +13,6 @@ export interface CreatePortfolio {
     tags: number[];
 }
 const CreatePortfolioModel = async(input:CreatePortfolio)=>{
-        if(input.userId === undefined || input.userId === null){
-            throw new Error("User id is required");
-        }
-        if(!input.title || input.title.trim() === ""){
-            throw new Error("Title is required");
-        }
-        if(!input.url || input.url.trim() === ""){
-            throw new Error("URL is required");
-        }
-        if(!input.jobPosition || input.jobPosition.trim() === ""){
-            throw new Error("Job position is required");
-        }
-        if(!input.company || input.company.trim() === ""){
-            throw new Error("Company is required");
-        }
-        if(!input.shortDesc || input.shortDesc.trim() === "" || input.shortDesc === null){
-            throw new Error("ShortDesc is required");
-        }
-        if (!input.tags || !Array.isArray(input.tags) || input.tags.length === 0) {
-            throw new HTTPException(400, { message: "Tags can't be empty. At least one tag ID is required." });
-        }
-            const existingUser = await db.user.findUnique({
-                where: { id: input.userId },
-            });
-
-            if (!existingUser) {
-                throw new Error("User does not exist!");
-            }
-
     try {
         const existingTagsCount = await db.tag.count({
             where: { id: { in: input.tags } }
@@ -68,7 +39,7 @@ const CreatePortfolioModel = async(input:CreatePortfolio)=>{
 
             }
         });
-        return newPortfolio; // Return the created portfolio
+        return newPortfolio; 
     } catch (e) {
         console.error("Error creating portfolio:", e);
         throw new HTTPException(500, { message: "Could not create portfolio." });

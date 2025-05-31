@@ -43,7 +43,7 @@ const Homepage = () => {
     <div className="bg-[rgba(239,239,239,1)] border flex flex-col items-center border-black border-solid min-h-screen">
       <HeaderAnnoy user={user} setUser={setUser}/>
       <main className="w-full flex flex-col items-center">
-        <Hero />
+        <Hero user={user} setUser={setUser} />
         <HowItWorks />
         <FeaturedResumes />
       </main>

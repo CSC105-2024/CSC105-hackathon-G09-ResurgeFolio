@@ -1,7 +1,8 @@
-import React from 'react';
-import { Link } from 'react-router-dom'; // Import Link
+import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
-export const Hero = () => {
+export const Hero = ({ user }) => {
+  const targetPath = user?.loggedIn ? "/browse" : "/register";
   return (
     <section className="bg-[rgba(54,122,255,1)] self-stretch flex w-full flex-col items-center text-2xl text-white font-black justify-center px-20 py-[97px] max-md:max-w-full max-md:pb-[100px] max-md:px-5">
       <div className="flex mb-[-23px] w-full max-w-[1019px] flex-col items-center max-md:max-w-full max-md:mb-2.5">
@@ -11,10 +12,11 @@ export const Hero = () => {
         <p className="font-normal text-center self-stretch mt-7 max-md:max-w-full">
           Learn from others' application experiences. Every rejection is a step closer to acceptance.
         </p>
-        {/* Wrap the button content with Link or make the button a Link */}
+
+
         <Link
-          to="/register" // Specify the route to navigate to
-          className="shadow-[0px_4px_4px_rgba(0,0,0,0.25)] w-[386px] max-w-full text-center mt-[42px] px-[70px] py-[25px] rounded-[50px] max-md:mt-10 max-md:px-5 hover:bg-[rgba(44,102,235,1)] transition-colors block" // Added 'block' for Link to behave like a button if needed, or style as preferred
+          to={targetPath}
+          className="shadow-[0px_4px_4px_rgba(0,0,0,0.25)] w-[386px] max-w-full text-center mt-[42px] px-[70px] py-[25px] rounded-[50px] max-md:mt-10 max-md:px-5 hover:bg-[rgba(44,102,235,1)] transition-colors block"
         >
           Start with us
         </Link>

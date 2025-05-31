@@ -2,9 +2,39 @@ import portfolioModel from "../models/portfolio.model.js";
 import type {Context} from "hono";
 import { HTTPException } from 'hono/http-exception';
 import {type CreatePortfolio} from "../models/portfolio.model.js";
-
+import { db } from "../index.js";
 
 export const handleCreatePortfolio = async (c: Context) => {
+    const input = await c.req.json() as CreatePortfolio;
+    if(input.userId === undefined || input.userId === null){
+        return c.json({ error: "UserId is required." }, 400);
+    }
+    if(!input.title || input.title.trim() === ""){
+        return c.json({error:"Title is required"},400);
+    }
+    if(!input.url || input.url.trim() === ""){
+        return c.json({error:"URL is required"},400);
+    }
+    if(!input.jobPosition || input.jobPosition.trim() === ""){
+        return c.json({error:"Job position is required"},400);
+    }
+    if(!input.company || input.company.trim() === ""){
+        return c.json({error:"Company is required"},400);
+    }
+    if(!input.shortDesc || input.shortDesc.trim() === "" || input.shortDesc === null){
+        return c.json({error:"ShortDesc is required"},400);
+    }
+    if (!input.tags || !Array.isArray(input.tags) || input.tags.length === 0) {
+        throw new HTTPException(400, { message: "Tags can't be empty. At least one tag ID is required." });
+    }
+    const existingUser = await db.user.findUnique({
+        where: { id: input.userId },
+    });
+
+    if (!existingUser) {
+        throw new Error("User does not exist!");
+    }
+
     try {
         const body = await c.req.json() as CreatePortfolio;
         if (!body || typeof body !== 'object') {

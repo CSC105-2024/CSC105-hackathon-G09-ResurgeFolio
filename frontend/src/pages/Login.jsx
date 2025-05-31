@@ -5,7 +5,7 @@ import { HeroImage } from '../components/HeroImage'; // Assuming this is also a 
  const LoginPage = () => {
   return (
     <div className="w-full min-h-screen bg-white flex flex-col">
-      <HeaderAnnoy />
+      <HeaderAnnoy  />
       <main className="flex flex-1 max-md:flex-col">
         <LoginForm />
         <HeroImage id ="how-it-works"/>

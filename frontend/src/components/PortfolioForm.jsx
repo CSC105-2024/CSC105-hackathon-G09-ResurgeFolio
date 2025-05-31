@@ -1,10 +1,11 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FormField } from '../components/FormField';
 import { TextAreaField } from '../components/TextAreaField';
 import { TagSelector } from '../components/TagSelector';
+import { getAllTag } from '../api/tag.api';
+import { submitPortfolio } from '../api/post.api';
 
-export const PortfolioForm = () => {
+export const PortfolioForm = ({ userId }) => {
   const [formData, setFormData] = useState({
     title: '',
     url: '',
@@ -15,37 +16,37 @@ export const PortfolioForm = () => {
     tags: []
   });
 
+  const [availableTags, setAvailableTags] = useState([]);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    const fetchTags = async () => {
+      try {
+        const tags = await getAllTag();
+        setAvailableTags(tags);
+      } catch (error) {
+        console.error('Failed to fetch tags:', error);
+      }
+    };
+
+    fetchTags();
+  }, []);
 
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.title.trim()) {
-      newErrors.title = 'Portfolio title is required';
-    }
-
+    if (!formData.title.trim()) newErrors.title = 'Portfolio title is required';
     if (!formData.url.trim()) {
       newErrors.url = 'Portfolio URL is required';
     } else if (!isValidUrl(formData.url)) {
       newErrors.url = 'Please enter a valid URL';
     }
 
-    if (!formData.position.trim()) {
-      newErrors.position = 'Job position is required';
-    }
-
-    if (!formData.company.trim()) {
-      newErrors.company = 'Company is required';
-    }
-
-    if (!formData.description.trim()) {
-      newErrors.description = 'Short description is required';
-    }
-
-    if (formData.tags.length === 0) {
-      newErrors.tags = 'At least one tag is required';
-    }
+    if (!formData.position.trim()) newErrors.position = 'Job position is required';
+    if (!formData.company.trim()) newErrors.company = 'Company is required';
+    if (!formData.description.trim()) newErrors.description = 'Short description is required';
+    if (formData.tags.length === 0) newErrors.tags = 'At least one tag is required';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -62,18 +63,28 @@ export const PortfolioForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
+
+    if (!validateForm()) return;
 
     setIsSubmitting(true);
-    
+    console.log('Submitting portfolio for userId:', userId);
+
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Reset form on success
+      const tagIds = formData.tags.map(tag => Number(tag.id));
+      const submit = await submitPortfolio(
+        userId,
+        formData.title,
+        formData.url,
+        formData.position,
+        formData.company,
+        formData.description,
+        formData.failures,
+        tagIds
+      );
+      console.log(submit);
+
+      alert('Portfolio submitted successfully!');
+
       setFormData({
         title: '',
         url: '',
@@ -83,8 +94,6 @@ export const PortfolioForm = () => {
         failures: '',
         tags: []
       });
-      
-      alert('Portfolio submitted successfully!');
     } catch (error) {
       alert('Error submitting portfolio. Please try again.');
     } finally {
@@ -93,15 +102,14 @@ export const PortfolioForm = () => {
   };
 
   const updateField = (field) => (value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    // Clear error when user starts typing
+    setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }));
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
   };
 
   return (
-    <section className="w-[862px] bg-white shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] p-8 max-md:w-full max-sm:p-6">
+    <section className="w-[862px] bg-white shadow p-8 max-md:w-full max-sm:p-6">
       <form onSubmit={handleSubmit} noValidate>
         <FormField
           label="Portfolio Title"
@@ -112,7 +120,6 @@ export const PortfolioForm = () => {
           onChange={updateField('title')}
           error={errors.title}
         />
-
         <FormField
           label="Portfolio URL"
           required
@@ -123,7 +130,6 @@ export const PortfolioForm = () => {
           onChange={updateField('url')}
           error={errors.url}
         />
-
         <FormField
           label="Job Position"
           required
@@ -133,7 +139,6 @@ export const PortfolioForm = () => {
           onChange={updateField('position')}
           error={errors.position}
         />
-
         <FormField
           label="Company"
           required
@@ -143,7 +148,6 @@ export const PortfolioForm = () => {
           onChange={updateField('company')}
           error={errors.company}
         />
-
         <TextAreaField
           label="Short Description"
           required
@@ -153,7 +157,6 @@ export const PortfolioForm = () => {
           onChange={updateField('description')}
           error={errors.description}
         />
-
         <TextAreaField
           label="Failures & Learnings (Optional)"
           placeholder="Optionally, mention any specific failures or challenges showcased in your portfolio and what you learned from them..."
@@ -161,18 +164,17 @@ export const PortfolioForm = () => {
           value={formData.failures}
           onChange={updateField('failures')}
         />
-
         <TagSelector
           selectedTags={formData.tags}
           onTagsChange={updateField('tags')}
+          availableTags={availableTags}
           error={errors.tags}
         />
-
-        <div className="flex justify-start">
+        <div className="flex justify-start mt-4">
           <button
             type="submit"
             disabled={isSubmitting}
-            className="text-white text-lg font-bold leading-[21.6px] tracking-[-0.18px] bg-[#367AFF] shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)] w-[178px] h-[54px] px-2 py-4 rounded-[10px] hover:bg-[#2563eb] disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
+            className="text-white text-lg font-bold bg-[#367AFF] hover:bg-[#2563eb] disabled:opacity-50 rounded-[10px] px-4 py-3 transition"
           >
             {isSubmitting ? 'Submitting...' : 'Submit Portfolio'}
           </button>
