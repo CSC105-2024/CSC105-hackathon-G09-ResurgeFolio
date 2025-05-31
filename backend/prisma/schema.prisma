@@ -1,0 +1,65 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          Int         @id @default(autoincrement())
+  name        String
+  email       String      @unique
+  password    String
+  role        String      @default("USER")
+  portfolios  Portfolio[]
+  reviews     Review[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Portfolio {
+  id             Int        @id @default(autoincrement())
+  title          String
+  url            String
+  jobPosition    String
+  company        String
+  shortDesc      String
+  learning       String?
+  status         String     @default("PENDING")
+  user           User       @relation(fields: [userId], references: [id])
+  userId         Int
+  tags           Tag[]
+  review         Review?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+}
+
+model Review {
+  id             Int        @id @default(autoincrement())
+  reviewer       User       @relation(fields: [reviewerId], references: [id])
+  reviewerId     Int
+  portfolio      Portfolio  @relation(fields: [portfolioId], references: [id])
+  portfolioId    Int        @unique
+  status         String
+  failureDesc    String?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+}
+
+model Tag {
+  id          Int           @id @default(autoincrement())
+  name        String        @unique
+  portfolios  Portfolio[]
+}
+
+
+
