@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 export const NotificationCard = ({
@@ -7,7 +6,8 @@ export const NotificationCard = ({
   company,
   date,
   backgroundImage = "https://cdn.builder.io/api/v1/image/assets/f44bb98f767d43ab8d3aa46adfd6d87f/de5a1cd411fffbb66f1d400a12d7942b56db7091?placeholderIfAbsent=true",
-  className = ''
+  className = '',
+  onViewDetails = () => {} // ✅ default to no-op to prevent errors
 }) => {
   const getStatusColor = (status) => {
     switch (status) {
@@ -79,7 +79,10 @@ export const NotificationCard = ({
         </div>
 
         {/* View Details Button */}
-        <button className="bg-[rgba(54,122,255,1)] flex items-center justify-center gap-[7px] text-xl text-white px-[43px] py-4 rounded-[30px] hover:bg-blue-600 transition-colors duration-200 max-md:px-5">
+        <button
+          onClick={onViewDetails}
+          className="bg-[rgba(54,122,255,1)] flex items-center justify-center gap-[7px] text-xl text-white px-[43px] py-4 rounded-[30px] hover:bg-blue-600 transition-colors duration-200 max-md:px-5"
+        >
           <span className="font-medium">
             View Details
           </span>

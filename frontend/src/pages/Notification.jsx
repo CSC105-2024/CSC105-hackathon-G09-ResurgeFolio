@@ -3,7 +3,7 @@ import { HeaderAnnoy } from '../components/HeaderAnnoy';
 import { NotificationGrid } from '../components/NotificationGrid';
 import { PortfolioDetailModal } from '../components/PortfolioDetailModel';
 import { fetchCurrentUser } from '../api/auth.api';
-import { getReviewByPortfolioId, getPortNotification } from '../api/post.api';
+import { getReviewByPortfolioId } from '../api/post.api';
 import { useState, useEffect } from 'react';
 
 const Notification = () => {
@@ -11,8 +11,6 @@ const Notification = () => {
     const [selectedPortfolio, setSelectedPortfolio] = useState(null);
     const [selectedReview, setSelectedReview] = useState(null);
     const [notifications, setNotifications] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
 
     const handleViewDetails = async (portfolioData) => {
       setSelectedPortfolio(portfolioData);
@@ -34,8 +32,6 @@ const Notification = () => {
       setSelectedReview(null);
     };
 
-    
-
     useEffect(() => {
         const getUser = async () => {
           try {
@@ -48,39 +44,6 @@ const Notification = () => {
         };
     
         getUser();
-      }, []);
-
-    useEffect(() => {
-        const fetchUserPortfolios = async () => {
-          setLoading(true);
-          try {
-            const response = await getPortNotification();
-            const portfolios = response.data || [];
-            
-            // Map the portfolios to notification format
-            const mappedNotifications = portfolios.map((portfolio) => ({
-              id: portfolio.id,
-              status: portfolio.status.toLowerCase(),
-              position: portfolio.jobPosition,
-              company: portfolio.company,
-              date: portfolio.createdAt.slice(0, 10),
-              title: portfolio.title,
-              url: portfolio.url,
-              shortDesc: portfolio.shortDesc,
-              tags: portfolio.tags || [],
-              backgroundImage: 'https://cdn.builder.io/api/v1/image/assets/f44bb98f767d43ab8d3aa46adfd6d87f/de5a1cd411fffbb66f1d400a12d7942b56db7091?placeholderIfAbsent=true'
-            }));
-
-            setNotifications(mappedNotifications);
-          } catch (err) {
-            console.error('Failed to fetch user portfolios:', err);
-            setError('Failed to load your portfolios');
-          } finally {
-            setLoading(false);
-          }
-        };
-
-        fetchUserPortfolios();
       }, []);
 
   return (
@@ -99,10 +62,8 @@ const Notification = () => {
         <NotificationGrid 
           user={user} 
           onViewDetails={handleViewDetails}
-      
           notifications={notifications}
-          loading={loading}
-          error={error}
+          setNotifications={setNotifications}
         />
 
         {/* Modal */}
