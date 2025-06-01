@@ -32,7 +32,7 @@ const Notification = () => {
         </h1>
         
         {/* Notifications Grid */}
-        <NotificationGrid />
+        <NotificationGrid  user={user}/>
       </main>
     </div>
   );

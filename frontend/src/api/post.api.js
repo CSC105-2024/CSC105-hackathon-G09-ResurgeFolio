@@ -11,6 +11,17 @@ export const getRejectedResume = async () => {
     throw error;
   }
 };
+export const getPendingResume = async () => {
+  try {
+    const response = await Axios.post('/post/getStatus', { 
+        status:"PENDING" 
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Get pending resume error:', error);
+    throw error;
+  }
+};
 export const getPortByTag = async (tags) => {
   try {
     const query = tags.map(tag => tag.toLowerCase()).join(',');

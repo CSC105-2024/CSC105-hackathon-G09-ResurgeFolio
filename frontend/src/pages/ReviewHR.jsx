@@ -1,58 +1,61 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { HeaderAnnoy } from '../components/HeaderAnnoy';
 import { ContentGuideline } from '../components/ContentGuideline';
 import { PortGrid } from '../components/PortGrid';
-
+import { fetchCurrentUser } from '../api/auth.api';
+import { getPendingResume } from '../api/post.api';
+import { PortfolioDetailModal } from '../components/PortfolioDetailModel';
 export const ReviewHR = () => {
-  const [portfolios] = useState([
-    {
-      id: '1',
-      status: 'pending',
-      position: 'UX/UI Designer',
-      company: 'Google',
-      date: '2025-05-15'
-    },
-    {
-      id: '2',
-      status: 'pending',
-      position: 'UX/UI Designer',
-      company: 'Google',
-      date: '2025-05-15'
-    },
-    {
-      id: '3',
-      status: 'pending',
-      position: 'UX/UI Designer',
-      company: 'Google',
-      date: '2025-05-15'
-    },
-    {
-      id: '4',
-      status: 'pending',
-      position: 'UX/UI Designer',
-      company: 'Google',
-      date: '2025-05-15'
-    },
-    {
-      id: '5',
-      status: 'pending',
-      position: 'UX/UI Designer',
-      company: 'Google',
-      date: '2025-05-15'
-    },
-    {
-      id: '6',
-      status: 'pending',
-      position: 'UX/UI Designer',
-      company: 'Google',
-      date: '2025-05-15'
-    }
-  ]);
+  const [user, setUser] = useState(null);
+  const [portfolios, setPortfolios] = useState([]);
+  const [error, setError] = useState(null);
+  const [selectedPortfolio, setSelectedPortfolio] = useState(null);
+
+  useEffect(() => {
+    const getUserAndPortfolios = async () => {
+      try {
+        const userData = await fetchCurrentUser();
+        setUser(userData);
+
+        // Only fetch pending resumes if the user is an HR
+        if (userData?.user?.role === 'HR') {
+          const res = await getPendingResume();
+          console.log('getPendingResume result:', res);
+
+          // Handle different shapes of response
+          const backendData = Array.isArray(res?.data)
+            ? res.data
+            : Array.isArray(res)
+            ? res
+            : [];
+
+          const mapped = backendData.map((item) => ({
+          id: item.id,
+          status: item.status.toLowerCase(),
+          title: item.title,
+          url: item.url,
+          position: item.jobPosition,
+          company: item.company,
+          date: item.createdAt?.slice(0, 10) || 'N/A',
+          description: item.shortDesc,
+          failure: item.learning,
+        }));
+
+
+          setPortfolios(mapped);
+        }
+      } catch (error) {
+        console.error('Failed to fetch user or portfolios:', error);
+        setError('Failed to load portfolios');
+      }
+    };
+
+    getUserAndPortfolios();
+  }, []);
 
   const handleViewDetails = (id) => {
-    console.log('View details for portfolio:', id);
-    // Implement view details functionality
+    const selected = portfolios.find(p => p.id === id);
+    setSelectedPortfolio(selected);
   };
 
   const handleAddReview = (id) => {
@@ -62,20 +65,30 @@ export const ReviewHR = () => {
 
   return (
     <div className="bg-[rgba(239,239,239,1)] overflow-hidden pb-[415px] rounded-[32px] max-md:pb-[100px]">
-      <HeaderAnnoy />
-      
+      <HeaderAnnoy user={user} setUser={setUser} />
+
       <main className="flex w-full flex-col mt-[53px] px-20 max-md:max-w-full max-md:mt-10 max-md:px-5">
         <h1 className="text-black text-5xl font-bold self-center max-md:max-w-full max-md:text-[40px]">
           Portfolio <span className="text-[rgba(143,30,249,1)]">Review Case</span>
         </h1>
-        
+
         <ContentGuideline />
-        
-        <PortGrid
-          portfolios={portfolios}
-          onViewDetails={handleViewDetails}
-          onAddReview={handleAddReview}
+
+        {error ? (
+          <div className="text-red-500 mt-4">⚠️ {error}</div>
+        ) : (
+          <PortGrid
+            portfolios={portfolios}
+            onViewDetails={handleViewDetails}
+            onAddReview={handleAddReview}
+          />
+        )}
+        {selectedPortfolio && (
+        <PortfolioDetailModal
+          portfolio={selectedPortfolio}
+          onClose={() => setSelectedPortfolio(null)}
         />
+      )}
       </main>
     </div>
   );

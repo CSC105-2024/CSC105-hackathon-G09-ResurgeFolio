@@ -33,6 +33,7 @@ const CreatePortfolioModel = async(input:CreatePortfolio)=>{
                 tags: {
                     connect: input.tags.map(tagId => ({ id: tagId }))
                 }
+                
             },
             include: {
                 tags: true

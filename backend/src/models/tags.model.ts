@@ -1,9 +1,8 @@
-// Example: tag.model.ts
-import { db } from '../index.js'; // Your Prisma client
+import { db } from '../index.js'; 
 
 const tagModel = async()=> {
         return db.tag.findMany({
-            orderBy: { name: 'asc' } // Optional: order them
+            orderBy: { name: 'asc' } 
         });
    };
 export default tagModel;

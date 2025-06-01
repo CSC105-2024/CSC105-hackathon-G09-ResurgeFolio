@@ -1,9 +1,11 @@
-import React, {useState,useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import { NotificationCard } from './NotificationCard';
-import { getPortNotification } from '../api/post.api';
-export const NotificationGrid = ({ className = '' }) => {
+import { getPortNotification, getPendingResume } from '../api/post.api';
+
+export const NotificationGrid = ({ user }) => {
   const [notifications, setNotifications] = useState([]);
   const [error, setError] = useState(null);
+  const bgImg = 'https://cdn.builder.io/api/v1/image/assets/f44bb98f767d43ab8d3aa46adfd6d87f/de5a1cd411fffbb66f1d400a12d7942b56db7091?placeholderIfAbsent=true';
 
   const defaultNotifications = [
     {
@@ -12,39 +14,30 @@ export const NotificationGrid = ({ className = '' }) => {
       position: 'UX/UI Designer',
       company: 'Google',
       date: '2025-05-15',
-      backgroundImage: 'https://cdn.builder.io/api/v1/image/assets/f44bb98f767d43ab8d3aa46adfd6d87f/de5a1cd411fffbb66f1d400a12d7942b56db7091?placeholderIfAbsent=true'
-    },
-    {
-      id: '2',
-      status: 'rejected',
-      position: 'UX/UI Designer',
-      company: 'Google',
-      date: '2025-05-15',
-      backgroundImage: 'https://cdn.builder.io/api/v1/image/assets/f44bb98f767d43ab8d3aa46adfd6d87f/de5a1cd411fffbb66f1d400a12d7942b56db7091?placeholderIfAbsent=true'
-    },
-    {
-      id: '3',
-      status: 'rejected',
-      position: 'UX/UI Designer',
-      company: 'Google',
-      date: '2025-05-15',
-      backgroundImage: 'https://cdn.builder.io/api/v1/image/assets/f44bb98f767d43ab8d3aa46adfd6d87f/de5a1cd411fffbb66f1d400a12d7942b56db7091?placeholderIfAbsent=true'
+      backgroundImage: bgImg
     }
   ];
 
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const res = await getPortNotification();
-        const backendData = res.data || [];
+        let backendData = [];
+
+        if (user?.user?.role === 'HR') {
+          const res = await getPendingResume();
+          backendData = res.data || [];
+        } else {
+          const res = await getPortNotification();
+          backendData = res.data || [];
+        }
 
         const mapped = backendData.map((item, index) => ({
           id: item.id,
-          status: item.status.toLowerCase(), // e.g. 'APPROVED' → 'approved'
-          position: item.jobPosition,
-          company: item.company,
-          date: item.createdAt.slice(0, 10), // get YYYY-MM-DD
-          backgroundImage: defaultNotifications[index % defaultNotifications.length].backgroundImage // reuse backgroundImage
+          status: (item.status || 'pending').toLowerCase(),
+          position: item.jobPosition || 'Unknown Position',
+          company: item.company || 'Unknown Company',
+          date: item.createdAt?.slice(0, 10) || 'Unknown Date',
+          backgroundImage: defaultNotifications[index % defaultNotifications.length].backgroundImage
         }));
 
         setNotifications(mapped);
@@ -55,12 +48,12 @@ export const NotificationGrid = ({ className = '' }) => {
     };
 
     fetchNotifications();
-  }, []);
+  }, [user]);
 
   const displayNotifications = notifications.length > 0 ? notifications : defaultNotifications;
 
   return (
-    <section className={`w-full max-w-[1330px] mr-[27px] mt-[115px] max-md:max-w-full max-md:mr-2.5 max-md:mt-10 ${className}`}>
+    <section className="w-full max-w-[1330px] mr-[27px] mt-[115px] max-md:max-w-full max-md:mr-2.5 max-md:mt-10">
       <div className="gap-5 flex max-md:flex-col max-md:items-stretch">
         <div className="w-[67%] max-md:w-full max-md:ml-0">
           <div className="grow max-md:max-w-full max-md:mt-10">
