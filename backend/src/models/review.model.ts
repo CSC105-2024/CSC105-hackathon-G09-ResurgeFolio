@@ -82,4 +82,25 @@ const createReviewModel = async (input: CreateReviewModelInput) => {
     }
 };
 
+
+export const getReviewByPortfolioIdModel = async (portfolioId: number) => {
+  if (!portfolioId) {
+    throw new HTTPException(400, { message: "portfolioId is required" });
+  }
+
+  try {
+    const reviews = await db.review.findMany({
+      where: { portfolioId },
+      include: {
+        reviewer: { select: { id: true, name: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return reviews;
+  } catch (err) {
+    console.error("Error in getReviewByPortfolioIdModel:", err);
+    throw new HTTPException(500, { message: "Failed to fetch reviews" });
+  }
+};
 export default { createReviewModel };

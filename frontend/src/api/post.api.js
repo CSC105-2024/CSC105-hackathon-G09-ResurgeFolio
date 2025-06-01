@@ -70,4 +70,30 @@ export const getPortNotification = async() => {
     }
 }
 
+export const addReview = async (portfolioId, status, failureDesc) => {
+  try {
+    const res = await Axios.post("/review", {
+      portfolioId,
+      status,
+      failureDesc,
+    });
+    // Return the full response data so we can access the review details
+    return res.data;
+  } catch (error) {
+    console.error("Add review error:", error);
+    throw error;
+  }
+};
+
+export const getReviewByPortfolioId = async (portfolioId) => {
+  try {
+    const res = await Axios.post("/review/getReviewByPortId", {
+      portfolioId,
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Failed to get reviews:", error);
+    throw error;
+  }
+};
 

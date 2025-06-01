@@ -1,75 +1,61 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { NotificationCard } from './NotificationCard';
-import { getPortNotification, getPendingResume } from '../api/post.api';
 
-export const NotificationGrid = ({ user }) => {
-  const [notifications, setNotifications] = useState([]);
-  const [error, setError] = useState(null);
-  const bgImg = 'https://cdn.builder.io/api/v1/image/assets/f44bb98f767d43ab8d3aa46adfd6d87f/de5a1cd411fffbb66f1d400a12d7942b56db7091?placeholderIfAbsent=true';
+export const NotificationGrid = ({ user, onViewDetails, notifications, loading, error }) => {
+  // Show loading state
+  if (loading) {
+    return (
+      <section className="w-full max-w-[1330px] mr-[27px] mt-[115px] max-md:max-w-full max-md:mr-2.5 max-md:mt-10">
+        <div className="text-center text-xl text-gray-600">
+          Loading your portfolios...
+        </div>
+      </section>
+    );
+  }
 
-  const defaultNotifications = [
-    {
-      id: '1',
-      status: 'rejected',
-      position: 'UX/UI Designer',
-      company: 'Google',
-      date: '2025-05-15',
-      backgroundImage: bgImg
-    }
-  ];
+  // Show error state
+  if (error) {
+    return (
+      <section className="w-full max-w-[1330px] mr-[27px] mt-[115px] max-md:max-w-full max-md:mr-2.5 max-md:mt-10">
+        <div className="text-center text-xl text-red-500">
+          ⚠️ {error}
+        </div>
+      </section>
+    );
+  }
 
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        let backendData = [];
-
-        if (user?.user?.role === 'HR') {
-          const res = await getPendingResume();
-          backendData = res.data || [];
-        } else {
-          const res = await getPortNotification();
-          backendData = res.data || [];
-        }
-
-        const mapped = backendData.map((item, index) => ({
-          id: item.id,
-          status: (item.status || 'pending').toLowerCase(),
-          position: item.jobPosition || 'Unknown Position',
-          company: item.company || 'Unknown Company',
-          date: item.createdAt?.slice(0, 10) || 'Unknown Date',
-          backgroundImage: defaultNotifications[index % defaultNotifications.length].backgroundImage
-        }));
-
-        setNotifications(mapped);
-      } catch (err) {
-        console.error('Error loading notifications:', err);
-        setError('Failed to load notifications');
-      }
-    };
-
-    fetchNotifications();
-  }, [user]);
-
-  const displayNotifications = notifications.length > 0 ? notifications : defaultNotifications;
+  // Show empty state if no portfolios
+  if (notifications.length === 0) {
+    return (
+      <section className="w-full max-w-[1330px] mr-[27px] mt-[115px] max-md:max-w-full max-md:mr-2.5 max-md:mt-10">
+        <div className="text-center text-xl text-gray-600">
+          You don't have any portfolios yet. Submit your first portfolio to get started!
+        </div>
+      </section>
+    );
+  }
 
   return (
-    <section className="w-full max-w-[1330px] mr-[27px] mt-[115px] max-md:max-w-full max-md:mr-2.5 max-md:mt-10">
+    <section className={`w-full max-w-[1330px] mr-[27px] mt-[115px] max-md:max-w-full max-md:mr-2.5 max-md:mt-10`}>
       <div className="gap-5 flex max-md:flex-col max-md:items-stretch">
         <div className="w-[67%] max-md:w-full max-md:ml-0">
           <div className="grow max-md:max-w-full max-md:mt-10">
             <div className="gap-5 flex max-md:flex-col max-md:items-stretch">
-              {displayNotifications.slice(0, 2).map((notification, index) => (
+              {notifications.slice(0, 2).map((notification, index) => (
                 <div
                   key={notification.id}
                   className={`w-6/12 max-md:w-full ${index > 0 ? 'ml-5 max-md:ml-0' : ''}`}
                 >
                   <NotificationCard
+                    id={notification.id}
                     status={notification.status}
                     position={notification.position}
                     company={notification.company}
                     date={notification.date}
                     backgroundImage={notification.backgroundImage}
                     className="max-md:mt-[31px]"
+                    onViewDetails={() => onViewDetails(notification)}
+                
                   />
                 </div>
               ))}
@@ -77,23 +63,22 @@ export const NotificationGrid = ({ user }) => {
           </div>
         </div>
 
-        {displayNotifications.length > 2 && (
+        {notifications.length > 2 && (
           <div className="w-[33%] ml-5 max-md:w-full max-md:ml-0">
             <NotificationCard
-              status={displayNotifications[2].status}
-              position={displayNotifications[2].position}
-              company={displayNotifications[2].company}
-              date={displayNotifications[2].date}
-              backgroundImage={displayNotifications[2].backgroundImage}
+              id={notifications[2].id}
+              status={notifications[2].status}
+              position={notifications[2].position}
+              company={notifications[2].company}
+              date={notifications[2].date}
+              backgroundImage={notifications[2].backgroundImage}
               className="max-md:mt-10"
+              onViewDetails={() => onViewDetails(notifications[2])}
+             
             />
           </div>
         )}
       </div>
-
-      {error && (
-        <div className="text-red-500 mt-4">⚠️ {error}</div>
-      )}
     </section>
   );
 };

@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { PortfolioCard } from './PortfolioCard';
 import { TagBadge } from './TagBadge';
 import { getAllTag } from '../api/tag.api'; 
-import { getPortByTag, getRejectedResume } from '../api/post.api';
+import { getPortByTag, getRejectedResume,getReviewByPortfolioId } from '../api/post.api';
 import { PortfolioDetailModal } from './PortfolioDetailModel';
+
 export const PortfolioGrid = () => {
   const [selectedTags, setSelectedTags] = useState([]);
   const [availableTags, setAvailableTags] = useState([]);
@@ -11,19 +12,31 @@ export const PortfolioGrid = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedPortfolio, setSelectedPortfolio] = useState(null);
+  const [selectedReview, setSelectedReview] = useState(null);
 
-  const handleViewDetails = (id) => {
+  const handleViewDetails = async(id) => {
     const found = portfolios.find(p => p.id === id);
     setSelectedPortfolio(found);
-  };
+    try {
+    const reviews = await getReviewByPortfolioId(id);
+    console.log(reviews[0].failureDesc);
+    const latestReview = reviews[0]; 
+    
+    setSelectedReview(latestReview || null);
+  } catch (err) {
+    console.error('Failed to load review:', err);
+    setSelectedReview(null);
+  }
+  }
 
-
+  
+ 
+  
   const toggleTag = (tag) => {
     setSelectedTags((prev) =>
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
     );
   };
-
 
   useEffect(() => {
     const fetchTags = async () => {
@@ -123,22 +136,26 @@ export const PortfolioGrid = () => {
           ))
         )}
       </section>
+      
       {selectedPortfolio && (
-      <PortfolioDetailModal
-        portfolio={{
-          id: selectedPortfolio.id,
-          status: selectedPortfolio.status.toLowerCase(),
-          title: selectedPortfolio.title,
-          url: selectedPortfolio.url,
-          position: selectedPortfolio.jobPosition,
-          company: selectedPortfolio.company,
-          description: selectedPortfolio.shortDesc,
-          failure: selectedPortfolio.failure
-        }}
-        onClose={() => setSelectedPortfolio(null)}
-      />
-    )}
-
+        <PortfolioDetailModal
+          portfolio={{
+            id: selectedPortfolio.id,
+            status: selectedPortfolio.status.toLowerCase(),
+            title: selectedPortfolio.title,
+            url: selectedPortfolio.url,
+            position: selectedPortfolio.jobPosition,
+            company: selectedPortfolio.company,
+            description: selectedPortfolio.shortDesc,
+            
+             failure:
+        selectedReview?.status === 'REJECTED'
+          ? selectedReview.failureDesc
+          : 'No failure description provided',
+          }}
+          onClose={() => setSelectedPortfolio(null)}
+        />
+      )}
     </main>
   );
 };

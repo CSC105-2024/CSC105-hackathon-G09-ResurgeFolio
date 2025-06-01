@@ -3,7 +3,7 @@ import type { Context } from 'hono';
 import { HTTPException } from 'hono/http-exception';
 import  reviewModel from '../models/review.model.js';
 import {type CreateReviewModelInput} from "../models/review.model.js";
-
+import { getReviewByPortfolioIdModel } from '../models/review.model.js';
 export const handleCreateReview= async (c: Context)=> {
         try {
             const authenticatedUser = c.get('user');
@@ -46,4 +46,21 @@ export const handleCreateReview= async (c: Context)=> {
             return c.json({ error: 'An unexpected server error occurred while processing the review.' }, 500);
         }
 
+};
+
+export const handleGetReviewByPortfolioId = async (c: Context) => {
+  try {
+    const body = await c.req.json();
+    const portfolioId = Number(body.portfolioId);
+
+    if (!portfolioId || isNaN(portfolioId)) {
+      return c.json({ error: "portfolioId is required and must be a valid number" }, 400);
+    }
+
+    const reviews = await getReviewByPortfolioIdModel(portfolioId);
+    return c.json(reviews, 200);
+  } catch (error: any) {
+    console.error("Error in handleGetReviewByPortfolioId:", error);
+    return c.json({ error: error.message }, error.status || 500);
+  }
 };

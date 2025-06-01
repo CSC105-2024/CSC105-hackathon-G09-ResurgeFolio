@@ -23,3 +23,7 @@ serve({
 }, (info) => {
   console.log(`Server ready at http://localhost:${info.port}`)
 })
+
+process.on('beforeExit', async () => {
+  await db.$disconnect()
+})

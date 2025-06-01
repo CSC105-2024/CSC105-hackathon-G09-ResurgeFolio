@@ -45,5 +45,43 @@ export const logoutUser = async() => {
     throw error;
   }
 }
+export const updateName = async(id, newName) => {
+  try {
+    const res = await Axios.patch('/user/updateName',{
+      id,
+      newName
+    })
+    return res.data;
+  }catch (error) {
+    console.error('Update Name error:',error);
+    throw error;
+  }
+}
 
+export const updateEmail = async (id, newEmail) => {
+  try {
+    const res = await Axios.patch('/user/updateEmail', {
+      id,
+      newEmail
+    });
+    return res.data;
+  } catch (error) {
+    console.error('Update Email error:', error);
+    throw error;
+  }
+};
+
+export const updatePassword = async (id, currentPassword, newPassword) => {
+  try {
+    const res = await Axios.patch('/user/updatePassword', {
+      id,
+      currentPassword,
+      newPassword
+    });
+    return res.data;
+  } catch (error) {
+    console.error('Update Password error:', error);
+    throw error;
+  }
+};
 

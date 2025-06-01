@@ -121,6 +121,17 @@ const GetPortfolioByTag = async (tagsString: string) => {
 
   return portfolios;
 };
+const DeletePortfolio = async (id: number) => {
+    const portfolio = await db.portfolio.findUnique({
+        where: { id: id }
+    });
+    if (!portfolio) {
+        throw new HTTPException(404, { message: `Portfolio with ID ${id} not found.` });
+    }
+    return db.portfolio.delete({
+        where: { id: id }
+    });
+}
 
-
-export default { CreatePortfolioModel, GetPortfoliosByUserId,GetPortfolioByTag,GetPortfoliosByStatus };
+export default { CreatePortfolioModel, GetPortfoliosByUserId,GetPortfolioByTag,
+    GetPortfoliosByStatus,DeletePortfolio };

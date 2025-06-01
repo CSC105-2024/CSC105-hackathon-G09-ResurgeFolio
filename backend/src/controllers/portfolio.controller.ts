@@ -142,3 +142,32 @@ export const handleGetPortfolioByTag = async (c: Context) => {
     return c.json({ error: 'Failed to retrieve portfolio by tag.' }, 500);
   }
 };
+
+export const handleDeletePortfolio = async (c: Context) => {
+    try {
+
+        const portfolioId = c.req.param('id');
+
+        if (!portfolioId) {
+            return c.json( { message: 'Portfolio ID is required' },400);
+        }
+
+        const id = parseInt(portfolioId, 10);
+        if (isNaN(id)) {
+            return c.json( { message: 'Invalid portfolio ID format' },400);
+        }
+        const deletedPortfolio = await portfolioModel.DeletePortfolio(id);
+
+        return c.json({
+            success: true,
+            message: 'Portfolio deleted successfully',
+            data: deletedPortfolio
+        }, 200);
+
+    } catch (error) {
+        console.error('Error deleting portfolio:', error);
+        throw new HTTPException(500, {
+            message: 'Internal server error while deleting portfolio'
+        });
+    }
+};

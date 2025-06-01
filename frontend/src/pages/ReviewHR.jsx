@@ -5,11 +5,14 @@ import { PortGrid } from '../components/PortGrid';
 import { fetchCurrentUser } from '../api/auth.api';
 import { getPendingResume } from '../api/post.api';
 import { PortfolioDetailModal } from '../components/PortfolioDetailModel';
+import { ReviewModal } from '../components/ReviewModal';
+
 export const ReviewHR = () => {
   const [user, setUser] = useState(null);
   const [portfolios, setPortfolios] = useState([]);
   const [error, setError] = useState(null);
   const [selectedPortfolio, setSelectedPortfolio] = useState(null);
+  const [reviewPortfolio, setReviewPortfolio] = useState(null);
 
   useEffect(() => {
     const getUserAndPortfolios = async () => {
@@ -30,17 +33,16 @@ export const ReviewHR = () => {
             : [];
 
           const mapped = backendData.map((item) => ({
-          id: item.id,
-          status: item.status.toLowerCase(),
-          title: item.title,
-          url: item.url,
-          position: item.jobPosition,
-          company: item.company,
-          date: item.createdAt?.slice(0, 10) || 'N/A',
-          description: item.shortDesc,
-          failure: item.learning,
-        }));
-
+            id: item.id,
+            status: item.status.toLowerCase(),
+            title: item.title,
+            url: item.url,
+            position: item.jobPosition,
+            company: item.company,
+            date: item.createdAt?.slice(0, 10) || 'N/A',
+            description: item.shortDesc,
+            failure: item.learning,
+          }));
 
           setPortfolios(mapped);
         }
@@ -59,8 +61,17 @@ export const ReviewHR = () => {
   };
 
   const handleAddReview = (id) => {
-    console.log('Add review for portfolio:', id);
-    // Implement add review functionality
+    const selected = portfolios.find(p => p.id === id);
+    setReviewPortfolio(selected);
+  };
+
+  const handleReviewSubmitted = (portfolioId, status, failureDesc) => {
+    // Remove the reviewed portfolio from the list since it's no longer pending
+    setPortfolios(prev => prev.filter(p => p.id !== portfolioId));
+    console.log(`Portfolio ${portfolioId} reviewed with status: ${status}`);
+    if (failureDesc) {
+      console.log(`Failure description: ${failureDesc}`);
+    }
   };
 
   return (
@@ -83,12 +94,21 @@ export const ReviewHR = () => {
             onAddReview={handleAddReview}
           />
         )}
+        
         {selectedPortfolio && (
-        <PortfolioDetailModal
-          portfolio={selectedPortfolio}
-          onClose={() => setSelectedPortfolio(null)}
-        />
-      )}
+          <PortfolioDetailModal
+            portfolio={selectedPortfolio}
+            onClose={() => setSelectedPortfolio(null)}
+          />
+        )}
+
+        {reviewPortfolio && (
+          <ReviewModal
+            portfolio={reviewPortfolio}
+            onClose={() => setReviewPortfolio(null)}
+            onReviewSubmitted={handleReviewSubmitted}
+          />
+        )}
       </main>
     </div>
   );
