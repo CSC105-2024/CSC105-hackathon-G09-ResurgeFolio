@@ -91,14 +91,20 @@ const updateEmail = async (id: number, newEmail: string) => {
         data: { email: newEmail }
     });
 };
+const deleteUser = async (id: number) => {
+    const user = await db.user.findUnique({ where: { id } });
+    if (!user) return null;
 
-const deleteUser = async (id:number) => {
-    const user = await db.user.findUnique({where: {id}});
-    if(!user) return null;
-    return db.user.delete({
-        where: {id}
-    })
+    return db.$transaction(async (prisma) => {
+        await prisma.portfolio.deleteMany({
+            where: { userId: id }
+        });
+        return prisma.user.delete({
+            where: { id }
+        });
+    });
 }
+
 
 export default {createUser,createHRUser,loginUser,
     getUserById,getUserByEmail,
