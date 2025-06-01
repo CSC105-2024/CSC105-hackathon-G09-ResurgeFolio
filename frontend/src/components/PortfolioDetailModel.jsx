@@ -49,7 +49,14 @@ export const PortfolioDetailModal = ({ portfolio, onClose }) => {
           </div>
           <div>
             <h3 className="font-bold">Portfolio URL</h3>
-            <p className="text-blue-600 underline">{url}</p>
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 underline break-words"
+          >
+            {url}
+          </a>
           </div>
           <div>
             <h3 className="font-bold">Job Position</h3>

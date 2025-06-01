@@ -5,7 +5,7 @@ export const NotificationCard = ({
   position,
   company,
   date,
-  backgroundImage = "https://cdn.builder.io/api/v1/image/assets/f44bb98f767d43ab8d3aa46adfd6d87f/de5a1cd411fffbb66f1d400a12d7942b56db7091?placeholderIfAbsent=true",
+  backgroundImage = "/banner.png",
   className = '',
   onViewDetails = () => {} // ✅ default to no-op to prevent errors
 }) => {
@@ -29,12 +29,18 @@ export const NotificationCard = ({
   return (
     <article className={`bg-white font-normal w-full pb-[26px] rounded-[30px] shadow-sm hover:shadow-md transition-shadow duration-200 ${className}`}>
       {/* Header with Status Badge */}
-      <div className="flex flex-col relative aspect-[5.012] w-full max-w-full text-xl text-white whitespace-nowrap pt-[11px] pb-[47px] px-20 rounded-[30px_30px_0px_0px] max-md:px-5">
+      {/* Adjusted padding: px-20 to pl-20 pr-10 and max-md:px-5 to max-md:pl-5 max-md:pr-3 */}
+      <div className="flex flex-col items-end relative aspect-[5.012] w-full max-w-full text-xl text-white whitespace-nowrap pt-[11px] pb-[47px] pl-20 pr-10 rounded-[30px_30px_0px_0px] max-md:pl-5 max-md:pr-3">
         <img
           src={backgroundImage}
           alt="Card background"
           className="absolute h-full w-full object-cover inset-0 rounded-[30px_30px_0px_0px]"
+          onError={(e) => {
+            e.target.onerror = null; // Prevents infinite loop if placeholder also fails
+            e.target.src = `https://placehold.co/600x120/cccccc/ffffff?text=Image+Not+Found`;
+          }}
         />
+        {/* The status badge will now be aligned further to the right due to reduced right padding on parent */}
         <div className={`relative ${getStatusColor(status)} px-2 rounded-[30px] w-fit`}>
           {getStatusText(status)}
         </div>
@@ -45,9 +51,13 @@ export const NotificationCard = ({
         {/* Position */}
         <div className="flex items-stretch gap-[17px] mb-2">
           <img
-            src="https://cdn.builder.io/api/v1/image/assets/f44bb98f767d43ab8d3aa46adfd6d87f/be0fa09027540cc023e428bc12a40016a110a94c?placeholderIfAbsent=true"
+            src="person.png"
             alt="Position icon"
             className="aspect-[1] object-contain w-[30px] shrink-0"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = `https://placehold.co/30x30/cccccc/ffffff?text=Icon`;
+            }}
           />
           <div className="basis-auto my-auto font-medium">
             {position}
@@ -57,9 +67,13 @@ export const NotificationCard = ({
         {/* Company */}
         <div className="flex items-stretch gap-[17px] whitespace-nowrap mb-2">
           <img
-            src="https://cdn.builder.io/api/v1/image/assets/f44bb98f767d43ab8d3aa46adfd6d87f/69c2856a6961d1eb58347b9fa7f65ac35c8ebf57?placeholderIfAbsent=true"
+            src="/work.png"
             alt="Company icon"
             className="aspect-[1] object-contain w-[30px] shrink-0"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = `https://placehold.co/30x30/cccccc/ffffff?text=Icon`;
+            }}
           />
           <div className="my-auto font-medium">
             {company}
@@ -69,9 +83,13 @@ export const NotificationCard = ({
         {/* Date */}
         <div className="flex items-stretch gap-[17px] whitespace-nowrap mb-5">
           <img
-            src="https://cdn.builder.io/api/v1/image/assets/f44bb98f767d43ab8d3aa46adfd6d87f/251a46d7aab82b22e97cac40c6e5378c619a6315?placeholderIfAbsent=true"
+            src="calendar.png"
             alt="Date icon"
             className="aspect-[1] object-contain w-[30px] shrink-0"
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = `https://placehold.co/30x30/cccccc/ffffff?text=Icon`;
+            }}
           />
           <div className="my-auto font-medium">
             {date}

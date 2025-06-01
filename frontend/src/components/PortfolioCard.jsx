@@ -32,7 +32,7 @@ export const PortfolioCard = ({
         <div className="self-stretch flex w-full items-stretch gap-5 flex-wrap justify-between">
           <div className="flex items-stretch gap-[19px] text-[rgba(54,122,255,1)] font-normal">
             <img
-              src="https://cdn.builder.io/api/v1/image/assets/f44bb98f767d43ab8d3aa46adfd6d87f/be0fa09027540cc023e428bc12a40016a110a94c?placeholderIfAbsent=true"
+              src="/person.png"
               alt="Position icon"
               className="aspect-[1] object-contain w-[30px] shrink-0"
             />
@@ -43,7 +43,7 @@ export const PortfolioCard = ({
         
         <div className="flex items-stretch gap-4 text-[rgba(54,122,255,1)] font-normal whitespace-nowrap ml-2.5 mt-2">
           <img
-            src="https://cdn.builder.io/api/v1/image/assets/f44bb98f767d43ab8d3aa46adfd6d87f/69c2856a6961d1eb58347b9fa7f65ac35c8ebf57?placeholderIfAbsent=true"
+            src="/work.png"
             alt="Company icon"
             className="aspect-[1] object-contain w-[30px] shrink-0"
           />
@@ -52,7 +52,7 @@ export const PortfolioCard = ({
         
         <div className="flex items-stretch gap-[17px] text-[rgba(54,122,255,1)] font-normal whitespace-nowrap ml-2.5 mt-[5px]">
           <img
-            src="https://cdn.builder.io/api/v1/image/assets/f44bb98f767d43ab8d3aa46adfd6d87f/251a46d7aab82b22e97cac40c6e5378c619a6315?placeholderIfAbsent=true"
+            src="/calendar.png"
             alt="Date icon"
             className="aspect-[1] object-contain w-[30px] shrink-0"
           />
@@ -76,7 +76,7 @@ export const PortfolioCard = ({
         >
           <div className="flex w-[157px] max-w-full items-stretch gap-2.5">
             <img
-              src="https://cdn.builder.io/api/v1/image/assets/f44bb98f767d43ab8d3aa46adfd6d87f/71b66f76dce56b7148bde720a0b07eaf927b7349?placeholderIfAbsent=true"
+              src="/openeye.png"
               alt=""
               className="aspect-[1] object-contain w-[30px] shrink-0"
             />

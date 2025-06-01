@@ -1,11 +1,10 @@
-
 import React from 'react';
 import { ResumeCard } from './ResumeCard';
 
-export const FeaturedResumes = () => {
+export const FeaturedResumes = ({ user }) => {
   const resumes = [
     {
-      image: "https://cdn.builder.io/api/v1/image/assets/f44bb98f767d43ab8d3aa46adfd6d87f/7c3bdb62a87bcfb52f8838537f2e3c2e40463ebc?placeholderIfAbsent=true",
+      image: "/banner.png",
       jobTitle: "UX/UI Designer",
       company: "Google",
       date: "2025-05-15",
@@ -13,7 +12,7 @@ export const FeaturedResumes = () => {
       status: "Rejected"
     },
     {
-      image: "https://cdn.builder.io/api/v1/image/assets/f44bb98f767d43ab8d3aa46adfd6d87f/7c3bdb62a87bcfb52f8838537f2e3c2e40463ebc?placeholderIfAbsent=true",
+      image: "/banner.png",
       jobTitle: "UX/UI Designer",
       company: "Google",
       date: "2025-05-15",
@@ -30,6 +29,7 @@ export const FeaturedResumes = () => {
       {resumes.map((resume, index) => (
         <ResumeCard
           key={index}
+          user={user}
           image={resume.image}
           jobTitle={resume.jobTitle}
           company={resume.company}

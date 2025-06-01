@@ -130,7 +130,7 @@ export const PortfolioGrid = () => {
               date={portfolio.createdAt.slice(0, 10)}
               status={portfolio.status.toLowerCase()}
               tags={portfolio.tags.map((t) => t.name)}
-              imageUrl="https://cdn.builder.io/api/v1/image/assets/f44bb98f767d43ab8d3aa46adfd6d87f/7c3bdb62a87bcfb52f8838537f2e3c2e40463ebc?placeholderIfAbsent=true"
+              imageUrl="banner.png"
               onViewDetails={handleViewDetails}
             />
           ))

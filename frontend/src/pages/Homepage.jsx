@@ -43,7 +43,7 @@ const Homepage = () => {
       <main className="w-full flex flex-col items-center">
         <Hero user={user} setUser={setUser} />
         <HowItWorks />
-        <FeaturedResumes />
+        <FeaturedResumes user={user}/>
       </main>
       <Footer />
     </div>

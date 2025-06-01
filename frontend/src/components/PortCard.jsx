@@ -1,8 +1,7 @@
-
 import React from 'react';
 
 export const PortCard = ({
-  status,
+  status, // expected to be lowercase: 'pending', 'approved', 'rejected', 'in-review'
   position,
   company,
   date,
@@ -10,48 +9,53 @@ export const PortCard = ({
   onAddReview,
   className = ''
 }) => {
+  // Function to determine the background color based on status
   const getStatusColor = () => {
     switch (status) {
       case 'pending':
-        return 'bg-[rgba(254,242,0,1)]';
-      case 'completed':
-        return 'bg-green-500';
+        return 'bg-yellow-500'; // Yellow for pending
+      case 'approved': // Assuming 'completed' might map to 'approved'
+        return 'bg-green-500'; // Green for approved/completed
+      case 'rejected':
+        return 'bg-red-500'; // Red for rejected, as in the image
       case 'in-review':
-        return 'bg-orange-500';
+        return 'bg-orange-500'; // Orange for in-review
       default:
-        return 'bg-[rgba(254,242,0,1)]';
+        return 'bg-gray-400'; // A neutral default
     }
   };
 
+  // Function to get the display text for the status
   const getStatusText = () => {
-    switch (status) {
-      case 'pending':
-        return 'Pending';
-      case 'completed':
-        return 'Completed';
-      case 'in-review':
-        return 'In Review';
-      default:
-        return 'Pending';
-    }
+    if (!status) return 'Unknown';
+    // Capitalize the first letter of the status
+    return status.charAt(0).toUpperCase() + status.slice(1); 
   };
 
   return (
-    <article className={`bg-white grow font-normal w-full pb-[45px] rounded-[30px] ${className}`}>
-      <div className="flex flex-col relative aspect-[5.012] w-[411px] max-w-full text-xl text-white whitespace-nowrap pt-[11px] pb-[47px] px-20 rounded-[30px_30px_0px_0px] max-md:px-5">
+    <article className={`bg-white grow font-normal w-full pb-[45px] rounded-[30px] shadow-sm hover:shadow-lg transition-shadow duration-200 ease-in-out ${className}`}>
+      {/* Header section with background image and status badge */}
+      {/* The parent div for the image and badge needs to be relative for absolute positioning of the badge */}
+      <div className="relative aspect-[5.012] w-full max-w-full rounded-t-[30px] overflow-hidden"> {/* Ensured parent is relative and handles overflow for rounded corners */}
         <img
-          src="https://cdn.builder.io/api/v1/image/assets/f44bb98f767d43ab8d3aa46adfd6d87f/de5a1cd411fffbb66f1d400a12d7942b56db7091?placeholderIfAbsent=true"
-          className="absolute h-full w-full object-cover inset-0"
+          src="/banner.png"
+          className="absolute h-full w-full object-cover inset-0" // Image covers the div
           alt="Portfolio background"
         />
-        <div className={`relative ${getStatusColor()} px-[15px] rounded-[30px] text-black`}>
+        {/* Status Badge: Absolutely positioned to the top-right */}
+        <div 
+          className={`absolute top-3 right-3 ${getStatusColor()} px-2.5 py-1 rounded-md text-white text-xs font-semibold`}
+        >
           {getStatusText()}
         </div>
       </div>
-      <div className="flex w-full flex-col text-base text-[rgba(54,122,255,1)] mt-2 pl-2.5 pr-[63px] max-md:pr-5">
-        <div className="flex items-stretch gap-[17px]">
+
+      {/* Card Content */}
+      <div className="flex w-full flex-col text-base text-[rgba(54,122,255,1)] mt-2 px-5 pt-3"> {/* Adjusted padding for content area */}
+        {/* Position Details */}
+        <div className="flex items-center gap-[17px] mb-1"> {/* Reduced bottom margin */}
           <img
-            src="https://cdn.builder.io/api/v1/image/assets/f44bb98f767d43ab8d3aa46adfd6d87f/be0fa09027540cc023e428bc12a40016a110a94c?placeholderIfAbsent=true"
+            src="/person.png"
             className="aspect-[1] object-contain w-[30px] shrink-0"
             alt="Position icon"
           />
@@ -59,9 +63,10 @@ export const PortCard = ({
             {position}
           </div>
         </div>
-        <div className="flex items-stretch gap-[17px] whitespace-nowrap">
+        {/* Company Details */}
+        <div className="flex items-center gap-[17px] whitespace-nowrap mt-1 mb-1"> {/* Reduced bottom margin */}
           <img
-            src="https://cdn.builder.io/api/v1/image/assets/f44bb98f767d43ab8d3aa46adfd6d87f/69c2856a6961d1eb58347b9fa7f65ac35c8ebf57?placeholderIfAbsent=true"
+            src="work.png"
             className="aspect-[1] object-contain w-[30px] shrink-0"
             alt="Company icon"
           />
@@ -69,9 +74,10 @@ export const PortCard = ({
             {company}
           </div>
         </div>
-        <div className="flex items-stretch gap-[17px] whitespace-nowrap">
+        {/* Date Details */}
+        <div className="flex items-center gap-[17px] whitespace-nowrap mt-1 mb-3"> {/* Adjusted bottom margin */}
           <img
-            src="https://cdn.builder.io/api/v1/image/assets/f44bb98f767d43ab8d3aa46adfd6d87f/251a46d7aab82b22e97cac40c6e5378c619a6315?placeholderIfAbsent=true"
+            src="/calendar.png"
             className="aspect-[1] object-contain w-[30px] shrink-0"
             alt="Date icon"
           />
@@ -79,22 +85,24 @@ export const PortCard = ({
             {date}
           </div>
         </div>
+        {/* View Details Button */}
         <button 
           onClick={onViewDetails}
-          className="bg-[rgba(54,122,255,1)] flex items-stretch gap-[3px] text-xl text-white mt-5 px-[53px] py-4 rounded-[30px] max-md:px-5 hover:bg-blue-600 transition-colors"
+          className="bg-[rgba(54,122,255,1)] flex items-center justify-center gap-[7px] text-xl text-white mt-4 px-[53px] py-3.5 rounded-[30px] max-md:px-5 hover:bg-blue-700 transition-colors duration-150 ease-in-out" /* Adjusted padding & hover */
         >
           <img
-            src="https://cdn.builder.io/api/v1/image/assets/f44bb98f767d43ab8d3aa46adfd6d87f/71b66f76dce56b7148bde720a0b07eaf927b7349?placeholderIfAbsent=true"
-            className="aspect-[1] object-contain w-[30px] shrink-0"
-            alt="View icon"
+            src="/openeye.png"
+            className="aspect-[1] object-contain w-[24px] h-[24px] shrink-0" /* Slightly smaller icon */
+            alt="" // Decorative icon, alt can be empty
           />
           <span className="basis-auto my-auto">
             View Details
           </span>
         </button>
+        {/* Add Review Button */}
         <button 
           onClick={onAddReview}
-          className="bg-[rgba(92,83,233,1)] text-xl text-white mt-5 px-[70px] py-[19px] rounded-[30px] max-md:px-5 hover:bg-purple-700 transition-colors"
+          className="bg-[rgba(92,83,233,1)] text-xl text-white mt-3 px-[70px] py-4 rounded-[30px] max-md:px-5 hover:bg-purple-700 transition-colors duration-150 ease-in-out" /* Adjusted padding & hover */
         >
           Add Review
         </button>
